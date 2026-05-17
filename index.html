@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>작업 검사 등록</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #f5f7fa;
+  --bg2:      #ffffff;
+  --bg3:      #eef1f7;
+  --navy:     #1a2744;
+  --navy-l:   #253561;
+  --blue:     #2563eb;
+  --blue-l:   #3b82f6;
+  --blue-xl:  #eff6ff;
+  --border:   #e2e8f0;
+  --border2:  #cbd5e1;
+  --text:     #0f172a;
+  --text2:    #475569;
+  --text3:    #94a3b8;
+  --green:    #16a34a;
+  --green-bg: #f0fdf4;
+  --green-b:  #bbf7d0;
+  --red:      #dc2626;
+  --red-bg:   #fef2f2;
+  --red-b:    #fecaca;
+  --orange:   #ea580c;
+  --orange-bg:#fff7ed;
+  --orange-b: #fed7aa;
+  --shadow:   0 1px 3px rgba(0,0,0,0.08);
+  --shadow-m: 0 4px 16px rgba(26,39,68,0.12);
+  --sans: 'Noto Sans KR', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --r: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+
+/* NAV */
+.nav {
+  background: var(--navy);
+  padding: 0 20px;
+  height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.nav-logo { display: flex; align-items: center; gap: 9px; color: #fff; font-weight: 700; font-size: 15px; letter-spacing: -0.02em; }
+.nav-logo-icon { width: 28px; height: 28px; background: var(--blue); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.nav-tabs { display: flex; gap: 3px; }
+.nav-tab {
+  padding: 5px 13px; border-radius: 6px;
+  font-size: 12px; font-weight: 500; cursor: pointer; border: none;
+  background: transparent; color: rgba(255,255,255,0.55);
+  transition: all 0.15s; font-family: var(--sans);
+}
+.nav-tab:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.nav-tab.active { background: rgba(255,255,255,0.15); color: #fff; }
+
+/* PAGES */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ══════════════════════════════
+   WORKER PAGE
+══════════════════════════════ */
+.worker-wrap { max-width: 500px; margin: 0 auto; padding: 24px 16px 60px; }
+
+/* Step indicator */
+.step-bar {
+  display: flex; align-items: center; margin-bottom: 28px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 14px 18px;
+  box-shadow: var(--shadow);
+}
+.step-title { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+.step-count { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+
+/* Section card */
+.sec {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 18px;
+  margin-bottom: 12px; box-shadow: var(--shadow);
+}
+.sec-title {
+  font-size: 10px; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+}
+.sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* Shipyard grid */
+.yard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.yard-btn {
+  background: var(--bg3); border: 1.5px solid var(--border);
+  border-radius: 9px; padding: 11px 6px; text-align: center;
+  cursor: pointer; font-size: 12px; font-weight: 500; color: var(--text2);
+  transition: all 0.15s; font-family: var(--sans); line-height: 1.3;
+}
+.yard-btn:hover { border-color: var(--blue-l); color: var(--blue); background: var(--blue-xl); }
+.yard-btn.selected { border-color: var(--blue); background: var(--blue-xl); color: var(--blue); font-weight: 600; }
+
+/* Form */
+.form-group { margin-bottom: 13px; }
+.form-group:last-child { margin-bottom: 0; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+.req { color: var(--red); }
+.form-input, .form-select, .form-textarea {
+  width: 100%; background: var(--bg3); border: 1.5px solid var(--border);
+  border-radius: 9px; padding: 10px 13px; font-size: 14px; color: var(--text);
+  font-family: var(--sans); outline: none; appearance: none;
+  transition: all 0.15s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--blue-l); background: #fff;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+}
+.form-textarea { resize: vertical; min-height: 72px; }
+
+/* Date display */
+.date-display {
+  background: var(--navy); color: #fff; border-radius: 9px;
+  padding: 11px 14px; font-family: var(--mono); font-size: 13px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.date-display span { color: rgba(255,255,255,0.55); font-size: 11px; }
+
+/* Result buttons */
+.result-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.result-btn {
+  padding: 18px 10px; border-radius: 11px; text-align: center;
+  cursor: pointer; border: 2px solid var(--border);
+  background: var(--bg3); transition: all 0.15s; font-family: var(--sans);
+}
+.result-btn .rb-icon { font-size: 26px; margin-bottom: 7px; }
+.result-btn .rb-label { font-size: 13px; font-weight: 700; color: var(--text2); }
+.result-btn .rb-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.result-btn:hover { border-color: var(--border2); }
+.result-btn.complete { border-color: var(--green); background: var(--green-bg); }
+.result-btn.complete .rb-label { color: var(--green); }
+.result-btn.comment { border-color: var(--orange); background: var(--orange-bg); }
+.result-btn.comment .rb-label { color: var(--orange); }
+
+/* Comment input */
+.comment-box {
+  display: none; margin-top: 10px;
+  background: var(--orange-bg); border: 1.5px solid var(--orange-b);
+  border-radius: 9px; padding: 12px;
+}
+.comment-box.visible { display: block; }
+.comment-box textarea {
+  width: 100%; background: #fff; border: 1px solid var(--orange-b);
+  border-radius: 7px; padding: 9px 12px; font-size: 13px;
+  font-family: var(--sans); outline: none; resize: none;
+  min-height: 64px; color: var(--text);
+}
+.comment-box textarea:focus { border-color: var(--orange); }
+
+/* Signature */
+.sig-wrap { position: relative; }
+.sig-canvas {
+  width: 100%; height: 150px;
+  background: var(--bg3); border: 1.5px solid var(--border);
+  border-radius: 9px; display: block; touch-action: none;
+  cursor: crosshair;
+}
+.sig-canvas.has-sig { border-color: var(--blue-l); background: #fff; }
+.sig-clear {
+  position: absolute; top: 8px; right: 8px;
+  padding: 4px 10px; background: rgba(255,255,255,0.9);
+  border: 1px solid var(--border2); border-radius: 6px;
+  font-size: 11px; color: var(--text2); cursor: pointer;
+  font-family: var(--sans); transition: all 0.12s;
+}
+.sig-clear:hover { border-color: var(--red); color: var(--red); }
+.sig-hint { font-size: 11px; color: var(--text3); text-align: center; margin-top: 6px; }
+
+/* System chips */
+.sys-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.sys-chip {
+  padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  border: 1.5px solid var(--border); background: var(--bg3);
+  color: var(--text2); cursor: pointer; transition: all 0.12s;
+  font-family: var(--sans); letter-spacing: 0.02em;
+}
+.sys-chip:hover { border-color: var(--blue-l); color: var(--blue); }
+.sys-chip.active { border-color: var(--blue); background: var(--blue-xl); color: var(--blue); }
+
+/* Item chips */
+.item-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.item-chip {
+  padding: 8px 14px; border-radius: 9px; font-size: 12px; font-weight: 600;
+  border: 1.5px solid var(--border); background: var(--bg3);
+  color: var(--text2); cursor: pointer; transition: all 0.12s;
+  font-family: var(--sans); letter-spacing: 0.02em; text-align: center;
+}
+.item-chip:hover { border-color: var(--blue-l); color: var(--blue); background: var(--blue-xl); }
+.item-chip.active { border-color: var(--blue); background: var(--blue-xl); color: var(--blue); }
+.item-chip.other { border-style: dashed; }
+.items-empty { font-size: 12px; color: var(--text3); padding: 8px 0; }
+
+/* Submit btn */
+.btn-submit {
+  width: 100%; padding: 16px;
+  background: var(--navy); color: #fff;
+  border: none; border-radius: var(--r);
+  font-size: 15px; font-weight: 700; font-family: var(--sans);
+  cursor: pointer; transition: all 0.15s; margin-top: 4px;
+  box-shadow: 0 4px 16px rgba(26,39,68,0.25);
+}
+.btn-submit:hover { background: var(--navy-l); transform: translateY(-1px); }
+.btn-submit:active { transform: translateY(0); }
+.btn-submit:disabled { background: var(--border2); box-shadow: none; cursor: not-allowed; transform: none; }
+
+/* Success screen */
+.success-screen {
+  display: none; text-align: center; padding: 60px 20px;
+}
+.success-screen.visible { display: block; }
+.success-icon { font-size: 60px; margin-bottom: 20px; animation: pop 0.4s ease; }
+@keyframes pop { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+.success-screen h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.success-screen p { font-size: 14px; color: var(--text2); margin-bottom: 28px; line-height: 1.7; }
+.btn-new {
+  padding: 13px 32px; background: var(--blue); color: #fff;
+  border: none; border-radius: 10px; font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: var(--sans); transition: background 0.15s;
+}
+.btn-new:hover { background: #1d4ed8; }
+
+/* ══════════════════════════════
+   ADMIN PAGE
+══════════════════════════════ */
+/* Lock */
+.lock-wrap { max-width: 340px; margin: 80px auto; padding: 0 20px; text-align: center; }
+.lock-icon { font-size: 40px; margin-bottom: 18px; }
+.lock-wrap h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.lock-wrap p { font-size: 13px; color: var(--text2); margin-bottom: 24px; }
+.lock-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.lock-input {
+  flex: 1; background: var(--bg2); border: 1.5px solid var(--border);
+  border-radius: 9px; padding: 11px 14px; font-size: 15px; color: var(--text);
+  font-family: var(--sans); outline: none; transition: all 0.15s; letter-spacing: 0.1em;
+}
+.lock-input:focus { border-color: var(--blue-l); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+.lock-input.error { border-color: var(--red); }
+.btn-unlock { padding: 11px 20px; background: var(--navy); color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--sans); }
+.btn-unlock:hover { background: var(--navy-l); }
+.lock-err { font-size: 12px; color: var(--red); height: 16px; }
+
+/* Admin inner */
+.admin-inner { display: none; }
+.admin-inner.unlocked { display: block; }
+.admin-wrap { padding: 24px 20px 60px; max-width: 1100px; }
+
+.admin-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 24px; gap: 12px; flex-wrap: wrap;
+}
+.admin-header h1 { font-size: 20px; font-weight: 700; }
+.admin-header p { font-size: 13px; color: var(--text2); margin-top: 3px; }
+.admin-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-a {
+  padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: var(--sans); transition: all 0.12s; border: none;
+}
+.btn-refresh { background: var(--blue-xl); color: var(--blue); }
+.btn-refresh:hover { background: #dbeafe; }
+.btn-export { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
+.btn-export:hover { border-color: var(--blue-l); color: var(--blue); }
+.btn-lock { background: transparent; color: var(--text3); border: 1px solid var(--border); }
+.btn-lock:hover { color: var(--text2); }
+.btn-sys-mgr { background: var(--navy); color: #fff; }
+.btn-sys-mgr:hover { background: var(--navy-l); }
+
+/* Stats */
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
+.stat-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px; box-shadow: var(--shadow);
+}
+.stat-num { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--text); }
+.stat-label { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+/* Filter */
+.filter-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.fi {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 11px; font-size: 13px; color: var(--text); font-family: var(--sans);
+  outline: none; appearance: none; transition: border-color 0.15s;
+}
+.fi:focus { border-color: var(--blue-l); }
+
+/* Table */
+.table-wrap {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow);
+}
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--bg3); padding: 10px 14px;
+  font-size: 11px; font-weight: 700; color: var(--text2);
+  text-align: left; text-transform: uppercase; letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--border);
+}
+td { padding: 11px 14px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg3); }
+
+.badge {
+  display: inline-block; padding: 3px 10px;
+  border-radius: 20px; font-size: 11px; font-weight: 700;
+}
+.badge-complete { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-b); }
+.badge-comment { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange-b); }
+.mono { font-family: var(--mono); font-size: 12px; }
+.empty { text-align: center; padding: 40px; color: var(--text3); font-size: 13px; }
+.btn-del {
+  padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+  background: var(--red-bg); color: var(--red); border: 1px solid var(--red-b);
+  cursor: pointer; font-family: var(--sans);
+}
+.btn-del:hover { background: var(--red-b); }
+
+/* Sig thumbnail */
+.sig-thumb { width: 60px; height: 36px; border: 1px solid var(--border); border-radius: 5px; object-fit: contain; background: #fff; cursor: pointer; }
+
+/* System manager */
+.sys-manager { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow); }
+.sys-manager h3 { font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+.sys-list { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+.sys-tag {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 20px; font-size: 12px; font-weight: 600; color: var(--text);
+}
+.sys-tag-del { cursor: pointer; color: var(--text3); font-size: 14px; line-height: 1; }
+.sys-tag-del:hover { color: var(--red); }
+.sys-add-row { display: flex; gap: 8px; }
+.sys-add-input {
+  flex: 1; background: var(--bg3); border: 1.5px solid var(--border);
+  border-radius: 8px; padding: 9px 12px; font-size: 13px; font-family: var(--sans);
+  color: var(--text); outline: none;
+}
+.sys-add-input:focus { border-color: var(--blue-l); background: #fff; }
+.btn-sys-add { padding: 9px 16px; background: var(--navy); color: #fff; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--sans); }
+.btn-sys-add:hover { background: var(--navy-l); }
+
+/* Mobile cards */
+@media (max-width: 640px) {
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .admin-wrap { padding: 16px 12px 50px; }
+  .table-wrap { display: none; }
+  .card-list { display: block; }
+  .filter-row .fi { font-size: 13px; }
+}
+@media (min-width: 641px) {
+  .card-list { display: none; }
+}
+.log-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px; margin-bottom: 10px; box-shadow: var(--shadow);
+}
+.log-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.log-card-yard { font-size: 14px; font-weight: 700; color: var(--navy); }
+.log-card-body { font-size: 13px; }
+.lcr { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border); }
+.lcr:last-child { border-bottom: none; }
+.lcl { color: var(--text2); font-size: 12px; }
+.lcv { color: var(--text); font-weight: 500; font-size: 12px; text-align: right; }
+
+/* Modal */
+.modal-bg {
+  display: none; position: fixed; inset: 0;
+  background: rgba(15,23,42,0.5); z-index: 200;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-bg.open { display: flex; }
+.modal {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 16px; padding: 26px; width: 100%; max-width: 420px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+  animation: mIn 0.2s ease;
+}
+@keyframes mIn { from{opacity:0;transform:scale(0.95) translateY(8px)} to{opacity:1;transform:scale(1) translateY(0)} }
+.modal h2 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+.modal > p { font-size: 13px; color: var(--text2); margin-bottom: 18px; }
+.minfo { background: var(--bg3); border: 1px solid var(--border); border-radius: 9px; padding: 14px 16px; margin-bottom: 18px; }
+.mrow { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+.mrow span:first-child { color: var(--text2); }
+.mrow span:last-child { font-weight: 600; }
+.mbtns { display: flex; gap: 9px; }
+.btn-cancel { flex:1; padding:11px; background:var(--bg3); border:1px solid var(--border); border-radius:8px; font-size:13px; color:var(--text2); cursor:pointer; font-family:var(--sans); }
+.btn-cancel:hover { border-color: var(--border2); }
+.btn-confirm { flex:2; padding:11px; background:var(--navy); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; font-family:var(--sans); }
+.btn-confirm:hover { background: var(--navy-l); }
+
+/* Sig view modal */
+.sig-view-modal { text-align: center; }
+.sig-view-modal img { max-width: 100%; border: 1px solid var(--border); border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">✓</div>
+    작업 검사 등록
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('worker',this)">● 등록</button>
+    <button class="nav-tab" onclick="showPage('admin',this)">▣ 관리자</button>
+  </div>
+</nav>
+
+<!-- ══════ WORKER ══════ -->
+<div id="page-worker" class="page active">
+  <!-- Form -->
+  <div id="worker-form" class="worker-wrap">
+
+    <!-- 1. 조선소 -->
+    <div class="sec">
+      <div class="sec-title">조선소 선택 <span class="req">*</span></div>
+      <div class="yard-grid" id="yard-grid"></div>
+      <div class="form-group" id="yard-custom-wrap" style="display:none;margin-top:10px">
+        <input class="form-input" id="inp-yard-custom" type="text" placeholder="조선소명 입력">
+      </div>
+    </div>
+
+    <!-- 2. 작업일시 -->
+    <div class="sec">
+      <div class="sec-title">작업일시</div>
+      <div class="date-display" id="date-display">
+        <span>자동 기록</span>
+        <span id="live-time"></span>
+      </div>
+    </div>
+
+    <!-- 3. 담당자 -->
+    <div class="sec">
+      <div class="sec-title">담당자 <span class="req">*</span></div>
+      <div class="form-group">
+        <select class="form-select" id="inp-person" onchange="togglePersonInput(this.value)">
+          <option value="">선택하세요 *</option>
+          <option value="오석">오석 (외주생산관리팀)</option>
+          <option value="손현규">손현규 (우성엔텍)</option>
+          <option value="구문제">구문제 (큐알피)</option>
+          <option value="윤종철">윤종철</option>
+          <option value="김우성">김우성</option>
+          <option value="성상윤">성상윤</option>
+          <option value="도경수">도경수</option>
+          <option value="정해영">정해영</option>
+          <option value="기타">기타 (직접입력)</option>
+        </select>
+      </div>
+      <div class="form-group" id="person-custom-wrap" style="display:none">
+        <input class="form-input" id="inp-person-custom" type="text" placeholder="이름 입력">
+      </div>
+    </div>
+
+    <!-- 4. 호선 -->
+    <div class="sec">
+      <div class="sec-title">호선 <span class="req">*</span></div>
+      <div class="form-group">
+        <input class="form-input" id="inp-vessel" type="text" placeholder="예: 1234" inputmode="numeric">
+      </div>
+    </div>
+
+    <!-- 5. 시스템 -->
+    <div class="sec">
+      <div class="sec-title">시스템 선택 <span class="req">*</span></div>
+      <div class="sys-chips" id="sys-chips"></div>
+    </div>
+
+    <!-- 5-1. 품목 선택 -->
+    <div class="sec" id="item-sec" style="display:none">
+      <div class="sec-title">품목 선택 <span class="req">*</span></div>
+      <div class="item-chips" id="item-chips"></div>
+      <div class="form-group" id="item-custom-wrap" style="display:none;margin-top:10px">
+        <input class="form-input" id="inp-item-custom" type="text" placeholder="품목명 직접 입력">
+      </div>
+    </div>
+
+    <!-- 6. 작업완료 여부 -->
+    <div class="sec">
+      <div class="sec-title">작업완료 여부 <span class="req">*</span></div>
+      <div class="result-btns">
+        <div class="result-btn" id="rb-complete" onclick="pickResult('complete')">
+          <div class="rb-icon">✅</div>
+          <div class="rb-label">완료</div>
+          <div class="rb-sub">작업 완료</div>
+        </div>
+        <div class="result-btn" id="rb-comment" onclick="pickResult('comment')">
+          <div class="rb-icon">💬</div>
+          <div class="rb-label">코멘트 발생</div>
+          <div class="rb-sub">추가 내용 있음</div>
+        </div>
+      </div>
+      <div class="comment-box" id="comment-box">
+        <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px">코멘트 내용</div>
+        <textarea id="inp-comment" placeholder="코멘트 내용을 간단히 입력해 주세요 (선택)"></textarea>
+      </div>
+    </div>
+
+    <!-- 7. 서명 -->
+    <div class="sec">
+      <div class="sec-title">작업자 서명 <span class="req">*</span></div>
+      <div class="sig-wrap">
+        <canvas class="sig-canvas" id="sig-canvas" width="800" height="300"></canvas>
+        <button class="sig-clear" onclick="clearSig()">지우기</button>
+      </div>
+      <div class="sig-hint">손가락 또는 마우스로 서명해 주세요</div>
+    </div>
+
+    <!-- 8. 작업내용 / 비고 -->
+    <div class="sec">
+      <div class="sec-title">추가 정보 <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">(선택)</span></div>
+      <div class="form-group">
+        <label class="form-label">작업내용</label>
+        <textarea class="form-textarea" id="inp-content" placeholder="작업 내용을 입력하세요..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">비고</label>
+        <textarea class="form-textarea" id="inp-note" placeholder="추가 메모..."></textarea>
+      </div>
+    </div>
+
+    <button class="btn-submit" onclick="handleSubmit()">내용 확인 및 제출</button>
+  </div>
+
+  <!-- Success -->
+  <div id="success-screen" class="success-screen worker-wrap">
+    <div class="success-icon">✅</div>
+    <h2>등록 완료!</h2>
+    <p id="success-msg">작업 내용이 성공적으로 등록되었습니다.</p>
+    <button class="btn-new" onclick="resetForm()">새 항목 등록</button>
+  </div>
+</div>
+
+<!-- ══════ ADMIN ══════ -->
+<div id="page-admin" class="page">
+  <!-- Lock -->
+  <div id="admin-lock">
+    <div class="lock-wrap">
+      <div class="lock-icon">🔒</div>
+      <h2>관리자 전용</h2>
+      <p>비밀번호를 입력해 주세요</p>
+      <div class="lock-row">
+        <input class="lock-input" id="pw-input" type="password" placeholder="••••••" onkeydown="if(event.key==='Enter')tryUnlock()">
+        <button class="btn-unlock" onclick="tryUnlock()">확인</button>
+      </div>
+      <div class="lock-err" id="lock-err"></div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="admin-inner" class="admin-inner">
+    <div class="admin-wrap">
+      <div class="admin-header">
+        <div>
+          <h1>관리자 대시보드</h1>
+          <p id="admin-date"></p>
+        </div>
+        <div class="admin-btns">
+          <button class="btn-a btn-refresh" onclick="loadAdminData()">↺ 새로고침</button>
+          <button class="btn-a btn-export" onclick="exportCSV()">↓ CSV</button>
+          <button class="btn-a btn-sys-mgr" onclick="toggleSysMgr()">⚙ 시스템 관리</button>
+          <button class="btn-a btn-lock" onclick="lockAdmin()">× 잠금</button>
+        </div>
+      </div>
+
+      <!-- System Manager -->
+      <div class="sys-manager" id="sys-manager" style="display:none">
+        <h3>⚙ 시스템 목록 관리</h3>
+        <div class="sys-list" id="admin-sys-list"></div>
+        <div class="sys-add-row">
+          <input class="sys-add-input" id="sys-add-input" type="text" placeholder="시스템명 입력 (예: EGCS)" onkeydown="if(event.key==='Enter')addSystem()">
+          <button class="btn-sys-add" onclick="addSystem()">+ 추가</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num" id="stat-total">-</div><div class="stat-label">전체 등록</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-complete">-</div><div class="stat-label">완료</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-comment">-</div><div class="stat-label">코멘트 발생</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-today">-</div><div class="stat-label">오늘 등록</div></div>
+      </div>
+
+      <!-- Filter -->
+      <div class="filter-row">
+        <input class="fi" id="f-name" type="text" placeholder="담당자 검색" oninput="renderTable()" style="width:140px">
+        <input class="fi" id="f-yard" type="text" placeholder="조선소 검색" oninput="renderTable()" style="width:140px">
+        <input class="fi" id="f-vessel" type="text" placeholder="호선 검색" oninput="renderTable()" style="width:110px">
+        <select class="fi" id="f-sys" onchange="renderTable()">
+          <option value="">전체 시스템</option>
+        </select>
+        <select class="fi" id="f-result" onchange="renderTable()">
+          <option value="">전체 결과</option>
+          <option value="complete">완료</option>
+          <option value="comment">코멘트</option>
+        </select>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>일시</th><th>조선소</th><th>담당자</th><th>호선</th>
+              <th>시스템</th><th>품목</th><th>결과</th><th>코멘트</th>
+              <th>작업내용</th><th>비고</th><th>서명</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="log-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="card-list" id="card-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: 제출 확인 -->
+<div class="modal-bg" id="m-confirm">
+  <div class="modal">
+    <h2>제출하시겠습니까?</h2>
+    <p>아래 내용을 확인해 주세요.</p>
+    <div class="minfo">
+      <div class="mrow"><span>조선소</span><span id="mc-yard">-</span></div>
+      <div class="mrow"><span>일시</span><span id="mc-time">-</span></div>
+      <div class="mrow"><span>담당자</span><span id="mc-name">-</span></div>
+      <div class="mrow"><span>호선</span><span id="mc-vessel">-</span></div>
+      <div class="mrow"><span>시스템</span><span id="mc-sys">-</span></div>
+      <div class="mrow"><span>품목</span><span id="mc-item">-</span></div>
+      <div class="mrow"><span>결과</span><span id="mc-result">-</span></div>
+    </div>
+    <div class="mbtns">
+      <button class="btn-cancel" onclick="closeModal('m-confirm')">취소</button>
+      <button class="btn-confirm" onclick="confirmSubmit()">제출</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: 서명 확대 -->
+<div class="modal-bg" id="m-sig">
+  <div class="modal sig-view-modal">
+    <h2 style="margin-bottom:14px">서명</h2>
+    <img id="sig-view-img" src="" alt="서명">
+    <div style="margin-top:14px;text-align:right">
+      <button class="btn-cancel" onclick="closeModal('m-sig')" style="width:auto;padding:9px 20px">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════
+//  설정
+// ══════════════════════════════
+const SCRIPT_URL = ''; // Apps Script URL 여기에 입력
+const ADMIN_PW   = '1234';
+
+const YARDS = ['현대미포','현대중공업','현대삼호','한화오션','한화엔진','삼성중공업','케이조선','대한조선','대선조선','HJ중공업','기타'];
+const DEFAULT_SYSTEMS = ['SCRUBBER','SCR'];
+const SYSTEM_ITEMS = {
+  'SCRUBBER': ['SCRUBBER UNIT','SEA WATER SUPPLY PUMP','SEALING AIR FAN','MAIN CONTROL PANEL','REMOTE CONTROL PANEL','WATER MONITORING PANEL','GAS MONITORING PANEL'],
+  'SCR':      ['REACTOR','MIXER','CONTROL PANEL','IDU']
+};
+
+// ══════════════════════════════
+//  State
+// ══════════════════════════════
+let selYard   = null;
+let selResult = null;
+let selSystem = null;
+let selItem   = null;
+let systems   = JSON.parse(localStorage.getItem('insp-systems') || 'null') || [...DEFAULT_SYSTEMS];
+let logs      = JSON.parse(localStorage.getItem('insp-logs') || '[]');
+let adminRows = [];
+let sigDrawing = false;
+let sigHasSig  = false;
+let pendingEntry = null;
+
+function saveData() {
+  localStorage.setItem('insp-systems', JSON.stringify(systems));
+  localStorage.setItem('insp-logs', JSON.stringify(logs));
+}
+
+// ══════════════════════════════
+//  Page switch
+// ══════════════════════════════
+function showPage(p, btn) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (p === 'admin') initAdmin();
+}
+
+// ══════════════════════════════
+//  WORKER — Init
+// ══════════════════════════════
+function initWorker() {
+  renderYardGrid();
+  renderSysChips();
+  initSig();
+  updateLiveClock();
+  setInterval(updateLiveClock, 1000);
+}
+
+function updateLiveClock() {
+  document.getElementById('live-time').textContent = fmtDateTime(new Date());
+}
+
+function renderYardGrid() {
+  const g = document.getElementById('yard-grid');
+  g.innerHTML = '';
+  YARDS.forEach(y => {
+    const d = document.createElement('button');
+    d.className = 'yard-btn' + (y === selYard ? ' selected' : '');
+    d.textContent = y;
+    d.onclick = () => selectYard(y);
+    g.appendChild(d);
+  });
+}
+
+function selectYard(y) {
+  selYard = y;
+  renderYardGrid();
+  const wrap = document.getElementById('yard-custom-wrap');
+  wrap.style.display = y === '기타' ? 'block' : 'none';
+  if (y !== '기타') document.getElementById('inp-yard-custom').value = '';
+}
+
+function togglePersonInput(v) {
+  document.getElementById('person-custom-wrap').style.display = v === '기타' ? 'block' : 'none';
+  if (v !== '기타') document.getElementById('inp-person-custom').value = '';
+}
+
+function renderSysChips() {
+  const c = document.getElementById('sys-chips');
+  c.innerHTML = '';
+  systems.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'sys-chip' + (s === selSystem ? ' active' : '');
+    btn.textContent = s;
+    btn.onclick = () => pickSystem(s, btn);
+    c.appendChild(btn);
+  });
+  // Update admin filter too
+  const sel = document.getElementById('f-sys');
+  if (sel) {
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">전체 시스템</option>';
+    systems.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s; o.textContent = s;
+      if (s === cur) o.selected = true;
+      sel.appendChild(o);
+    });
+  }
+}
+
+function pickSystem(s, btn) {
+  selSystem = s;
+  selItem = null;
+  document.querySelectorAll('.sys-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderItemChips();
+}
+
+function renderItemChips() {
+  const sec = document.getElementById('item-sec');
+  const container = document.getElementById('item-chips');
+  const customWrap = document.getElementById('item-custom-wrap');
+  document.getElementById('inp-item-custom').value = '';
+  customWrap.style.display = 'none';
+
+  const items = SYSTEM_ITEMS[selSystem];
+  if (!items) { sec.style.display = 'none'; return; }
+  sec.style.display = '';
+  container.innerHTML = '';
+  items.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'item-chip' + (item === selItem ? ' active' : '');
+    btn.textContent = item;
+    btn.onclick = () => pickItem(item, btn);
+    container.appendChild(btn);
+  });
+  // 기타 버튼
+  const other = document.createElement('button');
+  other.className = 'item-chip other' + (selItem === '기타' ? ' active' : '');
+  other.textContent = '기타';
+  other.onclick = () => pickItem('기타', other);
+  container.appendChild(other);
+}
+
+function pickItem(item, btn) {
+  selItem = item;
+  document.querySelectorAll('.item-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  const customWrap = document.getElementById('item-custom-wrap');
+  customWrap.style.display = item === '기타' ? 'block' : 'none';
+  if (item !== '기타') document.getElementById('inp-item-custom').value = '';
+}
+
+function pickResult(r) {
+  selResult = r;
+  document.getElementById('rb-complete').classList.toggle('complete', r === 'complete');
+  document.getElementById('rb-comment').classList.toggle('comment', r === 'comment');
+  document.getElementById('rb-complete').classList.remove('comment');
+  document.getElementById('rb-comment').classList.remove('complete');
+  document.getElementById('comment-box').classList.toggle('visible', r === 'comment');
+}
+
+// ══════════════════════════════
+//  SIGNATURE
+// ══════════════════════════════
+function initSig() {
+  const canvas = document.getElementById('sig-canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#0f172a';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const src = e.touches ? e.touches[0] : e;
+    return { x: (src.clientX - rect.left) * scaleX, y: (src.clientY - rect.top) * scaleY };
+  }
+
+  function start(e) {
+    e.preventDefault();
+    sigDrawing = true;
+    const p = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+  }
+  function draw(e) {
+    if (!sigDrawing) return;
+    e.preventDefault();
+    const p = getPos(e);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    sigHasSig = true;
+    canvas.classList.add('has-sig');
+  }
+  function end(e) { e.preventDefault(); sigDrawing = false; }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, { passive: false });
+  canvas.addEventListener('touchmove', draw, { passive: false });
+  canvas.addEventListener('touchend', end, { passive: false });
+}
+
+function clearSig() {
+  const canvas = document.getElementById('sig-canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  sigHasSig = false;
+  canvas.classList.remove('has-sig');
+}
+
+function getSigDataURL() {
+  return sigHasSig ? document.getElementById('sig-canvas').toDataURL('image/png') : '';
+}
+
+// ══════════════════════════════
+//  SUBMIT
+// ══════════════════════════════
+function handleSubmit() {
+  const personSel = document.getElementById('inp-person').value;
+  const personCustom = document.getElementById('inp-person-custom').value.trim();
+  const person = personSel === '기타' ? (personCustom || '') : personSel;
+  const vessel = document.getElementById('inp-vessel').value.trim();
+  const yardCustom = document.getElementById('inp-yard-custom').value.trim();
+  const yard = selYard === '기타' ? (yardCustom || '기타') : selYard;
+
+  if (!yard || selYard === null) return alert('조선소를 선택해 주세요.');
+  if (!person) return alert('담당자를 선택하거나 입력해 주세요.');
+  if (!vessel) return alert('호선을 입력해 주세요.');
+  if (!selSystem) return alert('시스템을 선택해 주세요.');
+  // 품목 validation
+  const itemCustom = document.getElementById('inp-item-custom').value.trim();
+  const finalItem = selItem === '기타' ? (itemCustom || '') : selItem;
+  if (SYSTEM_ITEMS[selSystem] && !finalItem) return alert('품목을 선택해 주세요.');
+  if (!selResult) return alert('작업완료 여부를 선택해 주세요.');
+  if (!sigHasSig) return alert('작업자 서명을 해 주세요.');
+
+  const now = new Date();
+  document.getElementById('mc-yard').textContent   = yard;
+  document.getElementById('mc-time').textContent   = fmtDateTime(now);
+  document.getElementById('mc-name').textContent   = person;
+  document.getElementById('mc-vessel').textContent = vessel;
+  document.getElementById('mc-sys').textContent    = selSystem;
+  document.getElementById('mc-item').textContent   = finalItem || '-';
+  document.getElementById('mc-result').textContent = selResult === 'complete' ? '✅ 완료' : '💬 코멘트 발생';
+  document.getElementById('m-confirm').classList.add('open');
+}
+
+async function confirmSubmit() {
+  closeModal('m-confirm');
+  const now = new Date();
+  const personSel = document.getElementById('inp-person').value;
+  const personCustom = document.getElementById('inp-person-custom').value.trim();
+  const person = personSel === '기타' ? (personCustom || '') : personSel;
+  const yardCustom = document.getElementById('inp-yard-custom').value.trim();
+  const yard = selYard === '기타' ? (yardCustom || '기타') : selYard;
+
+  const itemCustom = document.getElementById('inp-item-custom').value.trim();
+  const finalItem = selItem === '기타' ? (itemCustom || '기타') : (selItem || '');
+
+  const entry = {
+    id: now.getTime().toString(),
+    ts: now.toISOString(),
+    dateStr: fmtDateTime(now),
+    date: now.toLocaleDateString('ko-KR'),
+    yard,
+    person,
+    vessel: document.getElementById('inp-vessel').value.trim(),
+    system: selSystem,
+    item: finalItem,
+    result: selResult,
+    comment: document.getElementById('inp-comment').value.trim(),
+    content: document.getElementById('inp-content').value.trim(),
+    note: document.getElementById('inp-note').value.trim(),
+    sig: getSigDataURL()
+  };
+
+  logs.unshift(entry);
+  saveData();
+
+  if (SCRIPT_URL) {
+    try {
+      const params = new URLSearchParams({
+        action: 'add', id: entry.id, dateStr: entry.dateStr,
+        yard: entry.yard, person: entry.person, vessel: entry.vessel,
+        system: entry.system, result: entry.result,
+        comment: entry.comment, content: entry.content, note: entry.note
+      });
+      await fetch(SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+    } catch(e) { console.warn('시트 전송 실패:', e); }
+  }
+
+  document.getElementById('success-msg').innerHTML =
+    `<strong>${entry.yard}</strong> · ${entry.person} · 호선 ${entry.vessel}<br>${entry.result === 'complete' ? '✅ 완료' : '💬 코멘트 발생'}`;
+  document.getElementById('worker-form').style.display = 'none';
+  document.getElementById('success-screen').classList.add('visible');
+}
+
+function resetForm() {
+  selYard = null; selResult = null; selSystem = null; selItem = null; sigHasSig = false;
+  document.getElementById('worker-form').style.display = '';
+  document.getElementById('success-screen').classList.remove('visible');
+  document.getElementById('inp-person').value = '';
+  document.getElementById('inp-person-custom').value = '';
+  document.getElementById('person-custom-wrap').style.display = 'none';
+  document.getElementById('inp-vessel').value = '';
+  document.getElementById('inp-comment').value = '';
+  document.getElementById('inp-content').value = '';
+  document.getElementById('inp-note').value = '';
+  document.getElementById('inp-yard-custom').value = '';
+  document.getElementById('yard-custom-wrap').style.display = 'none';
+  document.getElementById('inp-item-custom').value = '';
+  document.getElementById('item-custom-wrap').style.display = 'none';
+  document.getElementById('item-sec').style.display = 'none';
+  document.getElementById('comment-box').classList.remove('visible');
+  document.getElementById('rb-complete').className = 'result-btn';
+  document.getElementById('rb-comment').className = 'result-btn';
+  clearSig();
+  renderYardGrid();
+  renderSysChips();
+  window.scrollTo(0, 0);
+}
+
+// ══════════════════════════════
+//  ADMIN
+// ══════════════════════════════
+function initAdmin() {
+  document.getElementById('admin-date').textContent =
+    new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+  renderAdminSysList();
+  loadAdminData();
+}
+
+function tryUnlock() {
+  const v = document.getElementById('pw-input').value;
+  const inp = document.getElementById('pw-input');
+  if (v === ADMIN_PW) {
+    document.getElementById('admin-lock').style.display = 'none';
+    document.getElementById('admin-inner').classList.add('unlocked');
+    inp.value = '';
+    document.getElementById('lock-err').textContent = '';
+  } else {
+    inp.classList.add('error');
+    document.getElementById('lock-err').textContent = '비밀번호가 틀렸습니다.';
+    setTimeout(() => inp.classList.remove('error'), 1200);
+  }
+}
+
+function lockAdmin() {
+  document.getElementById('admin-lock').style.display = '';
+  document.getElementById('admin-inner').classList.remove('unlocked');
+  document.getElementById('pw-input').value = '';
+}
+
+function toggleSysMgr() {
+  const el = document.getElementById('sys-manager');
+  el.style.display = el.style.display === 'none' ? '' : 'none';
+}
+
+function renderAdminSysList() {
+  const el = document.getElementById('admin-sys-list');
+  if (!el) return;
+  el.innerHTML = systems.map(s => `
+    <div class="sys-tag">
+      ${s}
+      <span class="sys-tag-del" onclick="removeSystem('${s}')">×</span>
+    </div>`).join('');
+}
+
+function addSystem() {
+  const inp = document.getElementById('sys-add-input');
+  const v = inp.value.trim().toUpperCase();
+  if (!v) return;
+  if (systems.includes(v)) { alert('이미 존재하는 시스템입니다.'); return; }
+  systems.push(v);
+  saveData();
+  inp.value = '';
+  renderAdminSysList();
+  renderSysChips();
+}
+
+function removeSystem(s) {
+  if (!confirm(`"${s}"을 삭제할까요?`)) return;
+  systems = systems.filter(x => x !== s);
+  saveData();
+  renderAdminSysList();
+  renderSysChips();
+}
+
+async function loadAdminData() {
+  if (SCRIPT_URL) {
+    try {
+      const data = await fetchJSONP(SCRIPT_URL + '?action=get&callback=__cb__');
+      adminRows = data.rows || [];
+    } catch(e) {
+      adminRows = [...logs];
+    }
+  } else {
+    adminRows = [...logs];
+  }
+  updateStats();
+  renderTable();
+}
+
+function fetchJSONP(url) {
+  return new Promise((resolve, reject) => {
+    const cbName = '__cb__' + Date.now();
+    const script = document.createElement('script');
+    const timer = setTimeout(() => { cleanup(); reject(new Error('timeout')); }, 8000);
+    window[cbName] = (data) => { cleanup(); resolve(data); };
+    script.src = url.replace('__cb__', cbName);
+    script.onerror = () => { cleanup(); reject(new Error('error')); };
+    document.head.appendChild(script);
+    function cleanup() { clearTimeout(timer); delete window[cbName]; script.remove(); }
+  });
+}
+
+function updateStats() {
+  const rows = adminRows.length ? adminRows : logs;
+  const today = new Date().toLocaleDateString('ko-KR');
+  document.getElementById('stat-total').textContent    = rows.length;
+  document.getElementById('stat-complete').textContent = rows.filter(r => r.result === 'complete').length;
+  document.getElementById('stat-comment').textContent  = rows.filter(r => r.result === 'comment').length;
+  document.getElementById('stat-today').textContent    = rows.filter(r => r.date === today).length;
+}
+
+function renderTable() {
+  const nf  = document.getElementById('f-name').value.toLowerCase();
+  const yf  = document.getElementById('f-yard').value.toLowerCase();
+  const vf  = document.getElementById('f-vessel').value.toLowerCase();
+  const sf  = document.getElementById('f-sys').value;
+  const rf  = document.getElementById('f-result').value;
+
+  const source = adminRows.length ? adminRows : logs;
+  let rows = source.filter(r => {
+    if (nf && !r.person.toLowerCase().includes(nf)) return false;
+    if (yf && !(r.yard||'').toLowerCase().includes(yf)) return false;
+    if (vf && !(r.vessel||'').toLowerCase().includes(vf)) return false;
+    if (sf && r.system !== sf) return false;
+    if (rf && r.result !== rf) return false;
+    return true;
+  });
+
+  const tbody = document.getElementById('log-tbody');
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="12" class="empty">기록이 없습니다</td></tr>';
+    renderCards([]);
+    return;
+  }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="mono" style="white-space:nowrap">${r.dateStr||r.date||'-'}</td>
+      <td style="font-weight:600">${r.yard}</td>
+      <td>${r.person}</td>
+      <td class="mono">${r.vessel}</td>
+      <td><span style="font-weight:600;color:var(--navy)">${r.system}</span></td>
+      <td style="color:var(--text2);font-size:12px">${r.item||'-'}</td>
+      <td><span class="badge ${r.result==='complete'?'badge-complete':'badge-comment'}">${r.result==='complete'?'완료':'코멘트'}</span></td>
+      <td style="color:var(--text2);font-size:12px;max-width:140px">${r.comment||'-'}</td>
+      <td style="color:var(--text2);font-size:12px;max-width:140px">${r.content||'-'}</td>
+      <td style="color:var(--text3);font-size:12px">${r.note||'-'}</td>
+      <td>${r.sig ? `<img class="sig-thumb" src="${r.sig}" onclick="viewSig('${r.sig}')" title="클릭하여 확대">` : '-'}</td>
+      <td><button class="btn-del" onclick="deleteLog('${r.id}')">삭제</button></td>
+    </tr>`).join('');
+  renderCards(rows);
+}
+
+function renderCards(rows) {
+  const el = document.getElementById('card-list');
+  if (!el) return;
+  if (!rows.length) { el.innerHTML = '<div class="empty">기록이 없습니다</div>'; return; }
+  el.innerHTML = rows.map(r => `
+    <div class="log-card">
+      <div class="log-card-top">
+        <div class="log-card-yard">${r.yard}</div>
+        <span class="badge ${r.result==='complete'?'badge-complete':'badge-comment'}">${r.result==='complete'?'완료':'코멘트'}</span>
+      </div>
+      <div class="log-card-body">
+        <div class="lcr"><span class="lcl">일시</span><span class="lcv mono">${r.dateStr||r.date||'-'}</span></div>
+        <div class="lcr"><span class="lcl">담당자</span><span class="lcv">${r.person}</span></div>
+        <div class="lcr"><span class="lcl">호선</span><span class="lcv mono">${r.vessel}</span></div>
+        <div class="lcr"><span class="lcl">시스템</span><span class="lcv" style="color:var(--navy);font-weight:700">${r.system}</span></div>
+        ${r.item ? `<div class="lcr"><span class="lcl">품목</span><span class="lcv">${r.item}</span></div>` : ''}
+        ${r.comment ? `<div class="lcr"><span class="lcl">코멘트</span><span class="lcv">${r.comment}</span></div>` : ''}
+        ${r.content ? `<div class="lcr"><span class="lcl">작업내용</span><span class="lcv">${r.content}</span></div>` : ''}
+        ${r.note    ? `<div class="lcr"><span class="lcl">비고</span><span class="lcv">${r.note}</span></div>` : ''}
+        ${r.sig     ? `<div class="lcr"><span class="lcl">서명</span><span class="lcv"><img class="sig-thumb" src="${r.sig}" onclick="viewSig('${r.sig}')"></span></div>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function deleteLog(id) {
+  if (!confirm('이 기록을 삭제할까요?')) return;
+  logs = logs.filter(l => l.id !== id);
+  adminRows = adminRows.filter(r => r.id !== id);
+  saveData();
+  updateStats();
+  renderTable();
+}
+
+function exportCSV() {
+  const rows = adminRows.length ? adminRows : logs;
+  const hd = ['일시','조선소','담당자','호선','시스템','품목','결과','코멘트','작업내용','비고'];
+  const body = rows.map(r => [
+    r.dateStr||r.date||'', r.yard, r.person, r.vessel,
+    r.system, r.item||'', r.result==='complete'?'완료':'코멘트 발생',
+    r.comment||'', r.content||'', r.note||''
+  ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+  const csv = [hd.join(','), ...body].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv);
+  a.download = `검사등록_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function viewSig(src) {
+  document.getElementById('sig-view-img').src = src;
+  document.getElementById('m-sig').classList.add('open');
+}
+
+// ══════════════════════════════
+//  Modal
+// ══════════════════════════════
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+window.onclick = e => { if (e.target.classList.contains('modal-bg')) e.target.classList.remove('open'); };
+
+// ══════════════════════════════
+//  Helpers
+// ══════════════════════════════
+function fmtDateTime(d) {
+  return d.toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}) + ' ' +
+         d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+// ══════════════════════════════
+//  Init
+// ══════════════════════════════
+initWorker();
+</script>
+</body>
+</html>
