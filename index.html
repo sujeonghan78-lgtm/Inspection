@@ -157,24 +157,26 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 }
 .comment-box textarea:focus { border-color: var(--orange); }
 
-/* Signature */
-.sig-wrap { position: relative; }
-.sig-canvas {
-  width: 100%; height: 150px;
-  background: var(--bg3); border: 1.5px solid var(--border);
-  border-radius: 9px; display: block; touch-action: none;
-  cursor: crosshair;
+/* Confirm check */
+.confirm-check-wrap {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--bg3); border: 2px solid var(--border);
+  border-radius: 11px; padding: 16px 18px; cursor: pointer;
+  transition: all 0.15s; user-select: none;
 }
-.sig-canvas.has-sig { border-color: var(--blue-l); background: #fff; }
-.sig-clear {
-  position: absolute; top: 8px; right: 8px;
-  padding: 4px 10px; background: rgba(255,255,255,0.9);
-  border: 1px solid var(--border2); border-radius: 6px;
-  font-size: 11px; color: var(--text2); cursor: pointer;
-  font-family: var(--sans); transition: all 0.12s;
+.confirm-check-wrap:hover { border-color: var(--blue-l); }
+.confirm-check-wrap.checked { border-color: var(--green); background: var(--green-bg); }
+.confirm-check-box {
+  width: 26px; height: 26px; border-radius: 7px;
+  border: 2px solid var(--border2); background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.15s; font-size: 16px;
 }
-.sig-clear:hover { border-color: var(--red); color: var(--red); }
-.sig-hint { font-size: 11px; color: var(--text3); text-align: center; margin-top: 6px; }
+.confirm-check-wrap.checked .confirm-check-box {
+  background: var(--green); border-color: var(--green); color: #fff;
+}
+.confirm-check-text { font-size: 14px; font-weight: 600; color: var(--text2); }
+.confirm-check-wrap.checked .confirm-check-text { color: var(--green); }
 
 /* System chips */
 .sys-chips { display: flex; flex-wrap: wrap; gap: 7px; }
@@ -504,17 +506,7 @@ tr:hover td { background: var(--bg3); }
       </div>
     </div>
 
-    <!-- 7. 서명 -->
-    <div class="sec">
-      <div class="sec-title">작업자 서명 <span class="req">*</span></div>
-      <div class="sig-wrap">
-        <canvas class="sig-canvas" id="sig-canvas" width="800" height="300"></canvas>
-        <button class="sig-clear" onclick="clearSig()">지우기</button>
-      </div>
-      <div class="sig-hint">손가락 또는 마우스로 서명해 주세요</div>
-    </div>
-
-    <!-- 8. 작업내용 / 비고 -->
+    <!-- 7. 작업내용 / 비고 -->
     <div class="sec">
       <div class="sec-title">추가 정보 <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">(선택)</span></div>
       <div class="form-group">
@@ -524,6 +516,15 @@ tr:hover td { background: var(--bg3); }
       <div class="form-group">
         <label class="form-label">비고</label>
         <textarea class="form-textarea" id="inp-note" placeholder="추가 메모..."></textarea>
+      </div>
+    </div>
+
+    <!-- 8. 최종 확인 -->
+    <div class="sec">
+      <div class="sec-title">최종 확인 <span class="req">*</span></div>
+      <div class="confirm-check-wrap" id="confirm-check-wrap" onclick="toggleConfirm()">
+        <div class="confirm-check-box" id="confirm-check-box"></div>
+        <div class="confirm-check-text" id="confirm-check-text">위 내용을 확인했습니다</div>
       </div>
     </div>
 
@@ -611,7 +612,7 @@ tr:hover td { background: var(--bg3); }
             <tr>
               <th>일시</th><th>조선소</th><th>담당자</th><th>호선</th>
               <th>시스템</th><th>품목</th><th>결과</th><th>코멘트</th>
-              <th>작업내용</th><th>비고</th><th>서명</th><th></th>
+              <th>작업내용</th><th>비고</th><th></th>
             </tr>
           </thead>
           <tbody id="log-tbody"></tbody>
@@ -645,22 +646,13 @@ tr:hover td { background: var(--bg3); }
   </div>
 </div>
 
-<!-- Modal: 서명 확대 -->
-<div class="modal-bg" id="m-sig">
-  <div class="modal sig-view-modal">
-    <h2 style="margin-bottom:14px">서명</h2>
-    <img id="sig-view-img" src="" alt="서명">
-    <div style="margin-top:14px;text-align:right">
-      <button class="btn-cancel" onclick="closeModal('m-sig')" style="width:auto;padding:9px 20px">닫기</button>
-    </div>
-  </div>
-</div>
+
 
 <script>
 // ══════════════════════════════
 //  설정
 // ══════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjutd7ZsMb5kFUHGun0KMAp22twwm4av5FzS6H0KnpO9ycE_bGQPDWu37FGziLlK5E-w/exec'; // Apps Script URL 여기에 입력
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjutd7ZsMb5kFUHGun0KMAp22twwm4av5FzS6H0KnpO9ycE_bGQPDWu37FGziLlK5E-w/exec';
 const ADMIN_PW   = '1234';
 
 const YARDS = ['현대미포','현대중공업','현대삼호','한화오션','한화엔진','삼성중공업','케이조선','대한조선','대선조선','HJ중공업','기타'];
@@ -706,7 +698,6 @@ function showPage(p, btn) {
 function initWorker() {
   renderYardGrid();
   renderSysChips();
-  initSig();
   updateLiveClock();
   setInterval(updateLiveClock, 1000);
 }
@@ -817,60 +808,22 @@ function pickResult(r) {
 }
 
 // ══════════════════════════════
-//  SIGNATURE
+//  CONFIRM CHECK
 // ══════════════════════════════
-function initSig() {
-  const canvas = document.getElementById('sig-canvas');
-  const ctx = canvas.getContext('2d');
-  ctx.strokeStyle = '#0f172a';
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-
-  function getPos(e) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const src = e.touches ? e.touches[0] : e;
-    return { x: (src.clientX - rect.left) * scaleX, y: (src.clientY - rect.top) * scaleY };
+function toggleConfirm() {
+  isConfirmed = !isConfirmed;
+  const wrap = document.getElementById('confirm-check-wrap');
+  const box  = document.getElementById('confirm-check-box');
+  const text = document.getElementById('confirm-check-text');
+  if (isConfirmed) {
+    wrap.classList.add('checked');
+    box.textContent = '✓';
+    text.textContent = '확인 완료';
+  } else {
+    wrap.classList.remove('checked');
+    box.textContent = '';
+    text.textContent = '위 내용을 확인했습니다';
   }
-
-  function start(e) {
-    e.preventDefault();
-    sigDrawing = true;
-    const p = getPos(e);
-    ctx.beginPath();
-    ctx.moveTo(p.x, p.y);
-  }
-  function draw(e) {
-    if (!sigDrawing) return;
-    e.preventDefault();
-    const p = getPos(e);
-    ctx.lineTo(p.x, p.y);
-    ctx.stroke();
-    sigHasSig = true;
-    canvas.classList.add('has-sig');
-  }
-  function end(e) { e.preventDefault(); sigDrawing = false; }
-
-  canvas.addEventListener('mousedown', start);
-  canvas.addEventListener('mousemove', draw);
-  canvas.addEventListener('mouseup', end);
-  canvas.addEventListener('touchstart', start, { passive: false });
-  canvas.addEventListener('touchmove', draw, { passive: false });
-  canvas.addEventListener('touchend', end, { passive: false });
-}
-
-function clearSig() {
-  const canvas = document.getElementById('sig-canvas');
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  sigHasSig = false;
-  canvas.classList.remove('has-sig');
-}
-
-function getSigDataURL() {
-  return sigHasSig ? document.getElementById('sig-canvas').toDataURL('image/png') : '';
 }
 
 // ══════════════════════════════
@@ -893,7 +846,7 @@ function handleSubmit() {
   const finalItem = selItem === '기타' ? (itemCustom || '') : selItem;
   if (SYSTEM_ITEMS[selSystem] && !finalItem) return alert('품목을 선택해 주세요.');
   if (!selResult) return alert('작업완료 여부를 선택해 주세요.');
-  if (!sigHasSig) return alert('작업자 서명을 해 주세요.');
+  if (!isConfirmed) return alert('최종 확인 체크를 해 주세요.');
 
   const now = new Date();
   document.getElementById('mc-yard').textContent   = yard;
@@ -906,7 +859,14 @@ function handleSubmit() {
   document.getElementById('m-confirm').classList.add('open');
 }
 
+let isSubmitting = false;
+let isConfirmed = false;
 async function confirmSubmit() {
+  if (isSubmitting) return;
+  isSubmitting = true;
+  // 버튼 비활성화 (중복 제출 방지)
+  const confirmBtn = document.querySelector('#m-confirm .btn-confirm');
+  if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = '제출 중...'; }
   closeModal('m-confirm');
   const now = new Date();
   const personSel = document.getElementById('inp-person').value;
@@ -932,7 +892,7 @@ async function confirmSubmit() {
     comment: document.getElementById('inp-comment').value.trim(),
     content: document.getElementById('inp-content').value.trim(),
     note: document.getElementById('inp-note').value.trim(),
-    sig: getSigDataURL()
+    sig: ''
   };
 
   logs.unshift(entry);
@@ -943,7 +903,7 @@ async function confirmSubmit() {
       const params = new URLSearchParams({
         action: 'add', id: entry.id, dateStr: entry.dateStr,
         yard: entry.yard, person: entry.person, vessel: entry.vessel,
-        system: entry.system, result: entry.result,
+        system: entry.system, item: entry.item, result: entry.result,
         comment: entry.comment, content: entry.content, note: entry.note
       });
       await fetch(SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
@@ -954,10 +914,13 @@ async function confirmSubmit() {
     `<strong>${entry.yard}</strong> · ${entry.person} · 호선 ${entry.vessel}<br>${entry.result === 'complete' ? '✅ 완료' : '💬 코멘트 발생'}`;
   document.getElementById('worker-form').style.display = 'none';
   document.getElementById('success-screen').classList.add('visible');
+  isSubmitting = false;
+  // 버튼 복구
+  if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = '제출'; }
 }
 
 function resetForm() {
-  selYard = null; selResult = null; selSystem = null; selItem = null; sigHasSig = false;
+  selYard = null; selResult = null; selSystem = null; selItem = null; isConfirmed = false;
   document.getElementById('worker-form').style.display = '';
   document.getElementById('success-screen').classList.remove('visible');
   document.getElementById('inp-person').value = '';
@@ -972,6 +935,10 @@ function resetForm() {
   document.getElementById('inp-item-custom').value = '';
   document.getElementById('item-custom-wrap').style.display = 'none';
   document.getElementById('item-sec').style.display = 'none';
+  const wrap = document.getElementById('confirm-check-wrap');
+  const box = document.getElementById('confirm-check-box');
+  const text = document.getElementById('confirm-check-text');
+  if(wrap){wrap.classList.remove('checked');} if(box){box.textContent='';} if(text){text.textContent='위 내용을 확인했습니다';}
   document.getElementById('comment-box').classList.remove('visible');
   document.getElementById('rb-complete').className = 'result-btn';
   document.getElementById('rb-comment').className = 'result-btn';
@@ -1103,7 +1070,7 @@ function renderTable() {
 
   const tbody = document.getElementById('log-tbody');
   if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="12" class="empty">기록이 없습니다</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="11" class="empty">기록이 없습니다</td></tr>';
     renderCards([]);
     return;
   }
@@ -1119,7 +1086,6 @@ function renderTable() {
       <td style="color:var(--text2);font-size:12px;max-width:140px">${r.comment||'-'}</td>
       <td style="color:var(--text2);font-size:12px;max-width:140px">${r.content||'-'}</td>
       <td style="color:var(--text3);font-size:12px">${r.note||'-'}</td>
-      <td>${r.sig ? `<img class="sig-thumb" src="${r.sig}" onclick="viewSig('${r.sig}')" title="클릭하여 확대">` : '-'}</td>
       <td><button class="btn-del" onclick="deleteLog('${r.id}')">삭제</button></td>
     </tr>`).join('');
   renderCards(rows);
@@ -1144,7 +1110,6 @@ function renderCards(rows) {
         ${r.comment ? `<div class="lcr"><span class="lcl">코멘트</span><span class="lcv">${r.comment}</span></div>` : ''}
         ${r.content ? `<div class="lcr"><span class="lcl">작업내용</span><span class="lcv">${r.content}</span></div>` : ''}
         ${r.note    ? `<div class="lcr"><span class="lcl">비고</span><span class="lcv">${r.note}</span></div>` : ''}
-        ${r.sig     ? `<div class="lcr"><span class="lcl">서명</span><span class="lcv"><img class="sig-thumb" src="${r.sig}" onclick="viewSig('${r.sig}')"></span></div>` : ''}
       </div>
     </div>`).join('');
 }
@@ -1171,11 +1136,6 @@ function exportCSV() {
   a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv);
   a.download = `검사등록_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
-}
-
-function viewSig(src) {
-  document.getElementById('sig-view-img').src = src;
-  document.getElementById('m-sig').classList.add('open');
 }
 
 // ══════════════════════════════
