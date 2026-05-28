@@ -1099,15 +1099,9 @@ function updateStats() {
 }
 
 function renderTable() {
-  const nf  = document.getElementById('f-name').value.toLowerCase();
-  const yf  = document.getElementById('f-yard').value.toLowerCase();
-  const vf  = document.getElementById('f-vessel').value.toLowerCase();
-  const sf  = document.getElementById('f-sys').value;
-  const rf  = document.getElementById('f-result').value;
-
   const source = adminRows.length ? adminRows : logs;
 
-  // 시스템 드롭다운을 실제 데이터 기반으로 갱신
+  // 시스템 드롭다운을 실제 데이터 기반으로 갱신 (값 읽기 전에 먼저)
   const sysSelect = document.getElementById('f-sys');
   if (sysSelect) {
     const cur = sysSelect.value;
@@ -1121,10 +1115,16 @@ function renderTable() {
     });
   }
 
+  const nf  = document.getElementById('f-name').value.toLowerCase();
+  const yf  = document.getElementById('f-yard').value.toLowerCase();
+  const vf  = document.getElementById('f-vessel').value.trim();
+  const sf  = document.getElementById('f-sys').value;
+  const rf  = document.getElementById('f-result').value;
+
   let rows = source.filter(r => {
     if (nf && !(r.person||'').toLowerCase().includes(nf)) return false;
     if (yf && !(r.yard||'').toLowerCase().includes(yf)) return false;
-    if (vf && !String(r.vessel||'').toLowerCase().includes(vf)) return false;
+    if (vf && !String(r.vessel||'').includes(vf)) return false;
     if (sf && r.system !== sf) return false;
     if (rf && r.result !== rf) return false;
     return true;
