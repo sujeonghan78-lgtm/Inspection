@@ -1106,10 +1106,25 @@ function renderTable() {
   const rf  = document.getElementById('f-result').value;
 
   const source = adminRows.length ? adminRows : logs;
+
+  // 시스템 드롭다운을 실제 데이터 기반으로 갱신
+  const sysSelect = document.getElementById('f-sys');
+  if (sysSelect) {
+    const cur = sysSelect.value;
+    const sysList = [...new Set(source.map(r => r.system).filter(Boolean))].sort();
+    sysSelect.innerHTML = '<option value="">전체 시스템</option>';
+    sysList.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s; o.textContent = s;
+      if (s === cur) o.selected = true;
+      sysSelect.appendChild(o);
+    });
+  }
+
   let rows = source.filter(r => {
-    if (nf && !r.person.toLowerCase().includes(nf)) return false;
+    if (nf && !(r.person||'').toLowerCase().includes(nf)) return false;
     if (yf && !(r.yard||'').toLowerCase().includes(yf)) return false;
-    if (vf && !(r.vessel||'').toLowerCase().includes(vf)) return false;
+    if (vf && !String(r.vessel||'').toLowerCase().includes(vf)) return false;
     if (sf && r.system !== sf) return false;
     if (rf && r.result !== rf) return false;
     return true;
