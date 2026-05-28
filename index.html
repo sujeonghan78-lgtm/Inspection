@@ -1020,7 +1020,12 @@ async function loadAdminData() {
   setLoadingState(true);
   if (SCRIPT_URL) {
     try {
-      const data = await fetchJSONP(SCRIPT_URL + '?action=get&callback=__cb__');
+      const res = await fetch(SCRIPT_URL + '?action=get', { method: 'GET' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      // JSONP 응답이 올 경우도 처리
+      const clean = text.replace(/^[^(]+\(/, '').replace(/\)\s*;?\s*$/, '');
+      const data = JSON.parse(clean);
       if (data && data.rows) {
         adminRows = data.rows;
         setDataSource('sheet');
@@ -1074,19 +1079,6 @@ function setDataSource(source) {
     el.style.border = '1px solid var(--orange-b)';
     el.textContent = '● 로컬 데이터';
   }
-}
-
-function fetchJSONP(url) {
-  return new Promise((resolve, reject) => {
-    const cbName = '__cb__' + Date.now();
-    const script = document.createElement('script');
-    const timer = setTimeout(() => { cleanup(); reject(new Error('timeout')); }, 12000);
-    window[cbName] = (data) => { cleanup(); resolve(data); };
-    script.src = url.replace('__cb__', cbName);
-    script.onerror = () => { cleanup(); reject(new Error('script load error')); };
-    document.head.appendChild(script);
-    function cleanup() { clearTimeout(timer); delete window[cbName]; if (script.parentNode) script.remove(); }
-  });
 }
 
 function updateStats() {
