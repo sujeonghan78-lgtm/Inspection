@@ -449,6 +449,7 @@ tr:hover td { background: var(--bg3); }
           <option value="오석">오석</option>
           <option value="손현규">손현규</option>
           <option value="구문제">구문제</option>
+          <option value="권영충">권영충</option>
           <option value="윤종철">윤종철</option>
           <option value="김우성">김우성</option>
           <option value="성상윤">성상윤</option>
@@ -658,10 +659,12 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjutd7ZsMb5kFUHGun0
 const ADMIN_PW   = '1234';
 
 const YARDS = ['현대미포','현대중공업','현대삼호','한화오션','한화엔진','삼성중공업','케이조선','대한조선','대선조선','HJ중공업','기타'];
-const DEFAULT_SYSTEMS = ['SCRUBBER','SCR'];
+const DEFAULT_SYSTEMS = ['SCRUBBER','SCR','BWTS','TLGS'];
 const SYSTEM_ITEMS = {
   'SCRUBBER': ['SCRUBBER UNIT','SEA WATER SUPPLY PUMP','SEALING AIR FAN','MAIN CONTROL PANEL','REMOTE CONTROL PANEL','WATER MONITORING PANEL','GAS MONITORING PANEL'],
-  'SCR':      ['REACTOR','MIXER','CONTROL PANEL','IDU']
+  'SCR':      ['REACTOR','MIXER','CONTROL PANEL','IDU'],
+  'BWTS':     ['REPEAT PANEL'],
+  'TLGS':     ['TLGS','VMS','HLAS','LG','ES','WDS']
 };
 
 // ══════════════════════════════
@@ -866,7 +869,6 @@ let isConfirmed = false;
 async function confirmSubmit() {
   if (isSubmitting) return;
   isSubmitting = true;
-  // 버튼 비활성화 (중복 제출 방지)
   const confirmBtn = document.querySelector('#m-confirm .btn-confirm');
   if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = '제출 중...'; }
   closeModal('m-confirm');
@@ -917,7 +919,6 @@ async function confirmSubmit() {
   document.getElementById('worker-form').style.display = 'none';
   document.getElementById('success-screen').classList.add('visible');
   isSubmitting = false;
-  // 버튼 복구
   if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.textContent = '제출'; }
 }
 
@@ -944,7 +945,6 @@ function resetForm() {
   document.getElementById('comment-box').classList.remove('visible');
   document.getElementById('rb-complete').className = 'result-btn';
   document.getElementById('rb-comment').className = 'result-btn';
-  clearSig();
   renderYardGrid();
   renderSysChips();
   window.scrollTo(0, 0);
@@ -1017,30 +1017,75 @@ function removeSystem(s) {
 }
 
 async function loadAdminData() {
+  setLoadingState(true);
   if (SCRIPT_URL) {
     try {
       const data = await fetchJSONP(SCRIPT_URL + '?action=get&callback=__cb__');
-      adminRows = data.rows || [];
+      if (data && data.rows) {
+        adminRows = data.rows;
+        setDataSource('sheet');
+      } else {
+        throw new Error('no rows');
+      }
     } catch(e) {
+      console.warn('시트 불러오기 실패, 로컬 데이터 사용:', e);
       adminRows = [...logs];
+      setDataSource('local');
     }
   } else {
     adminRows = [...logs];
+    setDataSource('local');
   }
+  setLoadingState(false);
   updateStats();
   renderTable();
+}
+
+function setLoadingState(loading) {
+  const btn = document.querySelector('.btn-refresh');
+  const tbody = document.getElementById('log-tbody');
+  const cardList = document.getElementById('card-list');
+  if (loading) {
+    if (btn) { btn.textContent = '⟳ 로딩중...'; btn.disabled = true; }
+    if (tbody) tbody.innerHTML = '<tr><td colspan="11" class="empty" style="color:var(--blue)">시트에서 불러오는 중...</td></tr>';
+    if (cardList) cardList.innerHTML = '<div class="empty" style="color:var(--blue)">시트에서 불러오는 중...</div>';
+  } else {
+    if (btn) { btn.textContent = '↺ 새로고침'; btn.disabled = false; }
+  }
+}
+
+function setDataSource(source) {
+  let el = document.getElementById('data-source-badge');
+  if (!el) {
+    el = document.createElement('span');
+    el.id = 'data-source-badge';
+    el.style.cssText = 'font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;margin-left:8px;vertical-align:middle';
+    const h1 = document.querySelector('.admin-header h1');
+    if (h1) h1.appendChild(el);
+  }
+  if (source === 'sheet') {
+    el.style.background = 'var(--green-bg)';
+    el.style.color = 'var(--green)';
+    el.style.border = '1px solid var(--green-b)';
+    el.textContent = '● 시트 연동';
+  } else {
+    el.style.background = 'var(--orange-bg)';
+    el.style.color = 'var(--orange)';
+    el.style.border = '1px solid var(--orange-b)';
+    el.textContent = '● 로컬 데이터';
+  }
 }
 
 function fetchJSONP(url) {
   return new Promise((resolve, reject) => {
     const cbName = '__cb__' + Date.now();
     const script = document.createElement('script');
-    const timer = setTimeout(() => { cleanup(); reject(new Error('timeout')); }, 8000);
+    const timer = setTimeout(() => { cleanup(); reject(new Error('timeout')); }, 12000);
     window[cbName] = (data) => { cleanup(); resolve(data); };
     script.src = url.replace('__cb__', cbName);
-    script.onerror = () => { cleanup(); reject(new Error('error')); };
+    script.onerror = () => { cleanup(); reject(new Error('script load error')); };
     document.head.appendChild(script);
-    function cleanup() { clearTimeout(timer); delete window[cbName]; script.remove(); }
+    function cleanup() { clearTimeout(timer); delete window[cbName]; if (script.parentNode) script.remove(); }
   });
 }
 
