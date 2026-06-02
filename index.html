@@ -38,7 +38,6 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
 
-/* NAV */
 .nav {
   background: var(--navy);
   padding: 0 20px;
@@ -58,16 +57,11 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 .nav-tab:hover { background: rgba(255,255,255,0.1); color: #fff; }
 .nav-tab.active { background: rgba(255,255,255,0.15); color: #fff; }
 
-/* PAGES */
 .page { display: none; }
 .page.active { display: block; }
 
-/* ══════════════════════════════
-   WORKER PAGE
-══════════════════════════════ */
 .worker-wrap { max-width: 500px; margin: 0 auto; padding: 24px 16px 60px; }
 
-/* Step indicator */
 .step-bar {
   display: flex; align-items: center; margin-bottom: 28px;
   background: var(--bg2); border: 1px solid var(--border);
@@ -77,7 +71,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 .step-title { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
 .step-count { font-family: var(--mono); font-size: 11px; color: var(--text3); }
 
-/* Section card */
 .sec {
   background: var(--bg2); border: 1px solid var(--border);
   border-radius: var(--r); padding: 18px;
@@ -90,7 +83,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 }
 .sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-/* Shipyard grid */
 .yard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .yard-btn {
   background: var(--bg3); border: 1.5px solid var(--border);
@@ -101,7 +93,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 .yard-btn:hover { border-color: var(--blue-l); color: var(--blue); background: var(--blue-xl); }
 .yard-btn.selected { border-color: var(--blue); background: var(--blue-xl); color: var(--blue); font-weight: 600; }
 
-/* Form */
 .form-group { margin-bottom: 13px; }
 .form-group:last-child { margin-bottom: 0; }
 .form-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
@@ -118,7 +109,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 }
 .form-textarea { resize: vertical; min-height: 72px; }
 
-/* Date display */
 .date-display {
   background: var(--navy); color: #fff; border-radius: 9px;
   padding: 11px 14px; font-family: var(--mono); font-size: 13px;
@@ -126,7 +116,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 }
 .date-display span { color: rgba(255,255,255,0.55); font-size: 11px; }
 
-/* Result buttons */
 .result-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .result-btn {
   padding: 18px 10px; border-radius: 11px; text-align: center;
@@ -142,7 +131,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 .result-btn.comment { border-color: var(--orange); background: var(--orange-bg); }
 .result-btn.comment .rb-label { color: var(--orange); }
 
-/* Comment input */
 .comment-box {
   display: none; margin-top: 10px;
   background: var(--orange-bg); border: 1.5px solid var(--orange-b);
@@ -157,7 +145,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 }
 .comment-box textarea:focus { border-color: var(--orange); }
 
-/* Confirm check */
 .confirm-check-wrap {
   display: flex; align-items: center; gap: 14px;
   background: var(--bg3); border: 2px solid var(--border);
@@ -178,7 +165,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 .confirm-check-text { font-size: 14px; font-weight: 600; color: var(--text2); }
 .confirm-check-wrap.checked .confirm-check-text { color: var(--green); }
 
-/* System chips */
 .sys-chips { display: flex; flex-wrap: wrap; gap: 7px; }
 .sys-chip {
   padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
@@ -189,7 +175,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 .sys-chip:hover { border-color: var(--blue-l); color: var(--blue); }
 .sys-chip.active { border-color: var(--blue); background: var(--blue-xl); color: var(--blue); }
 
-/* Item chips */
+/* 품목 다중선택 스타일 */
 .item-chips { display: flex; flex-wrap: wrap; gap: 7px; }
 .item-chip {
   padding: 8px 14px; border-radius: 9px; font-size: 12px; font-weight: 600;
@@ -200,9 +186,16 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 .item-chip:hover { border-color: var(--blue-l); color: var(--blue); background: var(--blue-xl); }
 .item-chip.active { border-color: var(--blue); background: var(--blue-xl); color: var(--blue); }
 .item-chip.other { border-style: dashed; }
-.items-empty { font-size: 12px; color: var(--text3); padding: 8px 0; }
+.item-select-hint {
+  font-size: 11px; color: var(--text3); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 4px;
+}
+.item-selected-count {
+  display: inline-block; background: var(--blue); color: #fff;
+  font-size: 10px; font-weight: 700; border-radius: 10px;
+  padding: 1px 7px; margin-left: 6px; vertical-align: middle;
+}
 
-/* Submit btn */
 .btn-submit {
   width: 100%; padding: 16px;
   background: var(--navy); color: #fff;
@@ -215,7 +208,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 .btn-submit:active { transform: translateY(0); }
 .btn-submit:disabled { background: var(--border2); box-shadow: none; cursor: not-allowed; transform: none; }
 
-/* Success screen */
 .success-screen {
   display: none; text-align: center; padding: 60px 20px;
 }
@@ -231,10 +223,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 }
 .btn-new:hover { background: #1d4ed8; }
 
-/* ══════════════════════════════
-   ADMIN PAGE
-══════════════════════════════ */
-/* Lock */
+/* ADMIN */
 .lock-wrap { max-width: 340px; margin: 80px auto; padding: 0 20px; text-align: center; }
 .lock-icon { font-size: 40px; margin-bottom: 18px; }
 .lock-wrap h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
@@ -251,7 +240,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 .btn-unlock:hover { background: var(--navy-l); }
 .lock-err { font-size: 12px; color: var(--red); height: 16px; }
 
-/* Admin inner */
 .admin-inner { display: none; }
 .admin-inner.unlocked { display: block; }
 .admin-wrap { padding: 24px 20px 60px; max-width: 1100px; }
@@ -276,7 +264,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 .btn-sys-mgr { background: var(--navy); color: #fff; }
 .btn-sys-mgr:hover { background: var(--navy-l); }
 
-/* Stats */
 .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
 .stat-card {
   background: var(--bg2); border: 1px solid var(--border);
@@ -285,7 +272,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 .stat-num { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--text); }
 .stat-label { font-size: 11px; color: var(--text3); margin-top: 3px; }
 
-/* Filter */
 .filter-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
 .fi {
   background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
@@ -294,7 +280,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 }
 .fi:focus { border-color: var(--blue-l); }
 
-/* Table */
 .table-wrap {
   background: var(--bg2); border: 1px solid var(--border);
   border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow);
@@ -325,10 +310,6 @@ tr:hover td { background: var(--bg3); }
 }
 .btn-del:hover { background: var(--red-b); }
 
-/* Sig thumbnail */
-.sig-thumb { width: 60px; height: 36px; border: 1px solid var(--border); border-radius: 5px; object-fit: contain; background: #fff; cursor: pointer; }
-
-/* System manager */
 .sys-manager { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow); }
 .sys-manager h3 { font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
 .sys-list { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
@@ -349,7 +330,6 @@ tr:hover td { background: var(--bg3); }
 .btn-sys-add { padding: 9px 16px; background: var(--navy); color: #fff; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--sans); }
 .btn-sys-add:hover { background: var(--navy-l); }
 
-/* Mobile cards */
 @media (max-width: 640px) {
   .stats-row { grid-template-columns: repeat(2,1fr); }
   .admin-wrap { padding: 16px 12px 50px; }
@@ -372,7 +352,6 @@ tr:hover td { background: var(--bg3); }
 .lcl { color: var(--text2); font-size: 12px; }
 .lcv { color: var(--text); font-weight: 500; font-size: 12px; text-align: right; }
 
-/* Modal */
 .modal-bg {
   display: none; position: fixed; inset: 0;
   background: rgba(15,23,42,0.5); z-index: 200;
@@ -397,15 +376,10 @@ tr:hover td { background: var(--bg3); }
 .btn-cancel:hover { border-color: var(--border2); }
 .btn-confirm { flex:2; padding:11px; background:var(--navy); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; font-family:var(--sans); }
 .btn-confirm:hover { background: var(--navy-l); }
-
-/* Sig view modal */
-.sig-view-modal { text-align: center; }
-.sig-view-modal img { max-width: 100%; border: 1px solid var(--border); border-radius: 8px; }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav class="nav">
   <div class="nav-logo">
     <div class="nav-logo-icon">✓</div>
@@ -417,12 +391,10 @@ tr:hover td { background: var(--bg3); }
   </div>
 </nav>
 
-<!-- ══════ WORKER ══════ -->
+<!-- WORKER -->
 <div id="page-worker" class="page active">
-  <!-- Form -->
   <div id="worker-form" class="worker-wrap">
 
-    <!-- 1. 조선소 -->
     <div class="sec">
       <div class="sec-title">조선소 선택 <span class="req">*</span></div>
       <div class="yard-grid" id="yard-grid"></div>
@@ -431,7 +403,6 @@ tr:hover td { background: var(--bg3); }
       </div>
     </div>
 
-    <!-- 2. 작업일시 -->
     <div class="sec">
       <div class="sec-title">작업일시</div>
       <div class="date-display" id="date-display">
@@ -440,7 +411,6 @@ tr:hover td { background: var(--bg3); }
       </div>
     </div>
 
-    <!-- 3. 담당자 -->
     <div class="sec">
       <div class="sec-title">담당자 <span class="req">*</span></div>
       <div class="form-group">
@@ -465,7 +435,6 @@ tr:hover td { background: var(--bg3); }
       </div>
     </div>
 
-    <!-- 4. 호선 -->
     <div class="sec">
       <div class="sec-title">호선 <span class="req">*</span></div>
       <div class="form-group">
@@ -473,22 +442,23 @@ tr:hover td { background: var(--bg3); }
       </div>
     </div>
 
-    <!-- 5. 시스템 -->
     <div class="sec">
       <div class="sec-title">시스템 선택 <span class="req">*</span></div>
       <div class="sys-chips" id="sys-chips"></div>
     </div>
 
-    <!-- 5-1. 품목 선택 -->
     <div class="sec" id="item-sec" style="display:none">
-      <div class="sec-title">품목 선택 <span class="req">*</span></div>
+      <div class="sec-title">
+        품목 선택 <span class="req">*</span>
+        <span id="item-count-badge" style="display:none" class="item-selected-count">0</span>
+      </div>
+      <div class="item-select-hint">복수 선택 가능합니다</div>
       <div class="item-chips" id="item-chips"></div>
       <div class="form-group" id="item-custom-wrap" style="display:none;margin-top:10px">
         <input class="form-input" id="inp-item-custom" type="text" placeholder="품목명 직접 입력">
       </div>
     </div>
 
-    <!-- 6. 작업완료 여부 -->
     <div class="sec">
       <div class="sec-title">작업완료 여부 <span class="req">*</span></div>
       <div class="result-btns">
@@ -509,7 +479,6 @@ tr:hover td { background: var(--bg3); }
       </div>
     </div>
 
-    <!-- 7. 작업내용 / 비고 -->
     <div class="sec">
       <div class="sec-title">추가 정보 <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0">(선택)</span></div>
       <div class="form-group">
@@ -522,7 +491,6 @@ tr:hover td { background: var(--bg3); }
       </div>
     </div>
 
-    <!-- 8. 최종 확인 -->
     <div class="sec">
       <div class="sec-title">최종 확인 <span class="req">*</span></div>
       <div class="confirm-check-wrap" id="confirm-check-wrap" onclick="toggleConfirm()">
@@ -534,7 +502,6 @@ tr:hover td { background: var(--bg3); }
     <button class="btn-submit" onclick="handleSubmit()">내용 확인 및 제출</button>
   </div>
 
-  <!-- Success -->
   <div id="success-screen" class="success-screen worker-wrap">
     <div class="success-icon">✅</div>
     <h2>등록 완료!</h2>
@@ -543,9 +510,8 @@ tr:hover td { background: var(--bg3); }
   </div>
 </div>
 
-<!-- ══════ ADMIN ══════ -->
+<!-- ADMIN -->
 <div id="page-admin" class="page">
-  <!-- Lock -->
   <div id="admin-lock">
     <div class="lock-wrap">
       <div class="lock-icon">🔒</div>
@@ -559,7 +525,6 @@ tr:hover td { background: var(--bg3); }
     </div>
   </div>
 
-  <!-- Dashboard -->
   <div id="admin-inner" class="admin-inner">
     <div class="admin-wrap">
       <div class="admin-header">
@@ -575,7 +540,6 @@ tr:hover td { background: var(--bg3); }
         </div>
       </div>
 
-      <!-- System Manager -->
       <div class="sys-manager" id="sys-manager" style="display:none">
         <h3>⚙ 시스템 목록 관리</h3>
         <div class="sys-list" id="admin-sys-list"></div>
@@ -585,7 +549,6 @@ tr:hover td { background: var(--bg3); }
         </div>
       </div>
 
-      <!-- Stats -->
       <div class="stats-row">
         <div class="stat-card"><div class="stat-num" id="stat-total">-</div><div class="stat-label">전체 등록</div></div>
         <div class="stat-card"><div class="stat-num" id="stat-complete">-</div><div class="stat-label">완료</div></div>
@@ -593,7 +556,6 @@ tr:hover td { background: var(--bg3); }
         <div class="stat-card"><div class="stat-num" id="stat-today">-</div><div class="stat-label">오늘 등록</div></div>
       </div>
 
-      <!-- Filter -->
       <div class="filter-row">
         <input class="fi" id="f-name" type="text" placeholder="담당자 검색" oninput="renderTable()" style="width:140px">
         <input class="fi" id="f-yard" type="text" placeholder="조선소 검색" oninput="renderTable()" style="width:140px">
@@ -608,7 +570,6 @@ tr:hover td { background: var(--bg3); }
         </select>
       </div>
 
-      <!-- Table -->
       <div class="table-wrap">
         <table>
           <thead>
@@ -622,7 +583,6 @@ tr:hover td { background: var(--bg3); }
         </table>
       </div>
 
-      <!-- Mobile cards -->
       <div class="card-list" id="card-list"></div>
     </div>
   </div>
@@ -649,12 +609,7 @@ tr:hover td { background: var(--bg3); }
   </div>
 </div>
 
-
-
 <script>
-// ══════════════════════════════
-//  설정
-// ══════════════════════════════
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjutd7ZsMb5kFUHGun0KMAp22twwm4av5FzS6H0KnpO9ycE_bGQPDWu37FGziLlK5E-w/exec';
 const ADMIN_PW   = '1234';
 
@@ -667,28 +622,21 @@ const SYSTEM_ITEMS = {
   'TLGS':     ['TLGS','VMS','HLAS','LG','ES','WDS']
 };
 
-// ══════════════════════════════
-//  State
-// ══════════════════════════════
 let selYard   = null;
 let selResult = null;
 let selSystem = null;
-let selItem   = null;
+let selItems  = [];   // 다중선택 배열
 let systems   = JSON.parse(localStorage.getItem('insp-systems') || 'null') || [...DEFAULT_SYSTEMS];
 let logs      = JSON.parse(localStorage.getItem('insp-logs') || '[]');
 let adminRows = [];
-let sigDrawing = false;
-let sigHasSig  = false;
-let pendingEntry = null;
+let isConfirmed = false;
+let isSubmitting = false;
 
 function saveData() {
   localStorage.setItem('insp-systems', JSON.stringify(systems));
   localStorage.setItem('insp-logs', JSON.stringify(logs));
 }
 
-// ══════════════════════════════
-//  Page switch
-// ══════════════════════════════
 function showPage(p, btn) {
   document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
@@ -697,9 +645,6 @@ function showPage(p, btn) {
   if (p === 'admin') initAdmin();
 }
 
-// ══════════════════════════════
-//  WORKER — Init
-// ══════════════════════════════
 function initWorker() {
   renderYardGrid();
   renderSysChips();
@@ -746,7 +691,6 @@ function renderSysChips() {
     btn.onclick = () => pickSystem(s, btn);
     c.appendChild(btn);
   });
-  // Update admin filter too
   const sel = document.getElementById('f-sys');
   if (sel) {
     const cur = sel.value;
@@ -762,7 +706,7 @@ function renderSysChips() {
 
 function pickSystem(s, btn) {
   selSystem = s;
-  selItem = null;
+  selItems = [];
   document.querySelectorAll('.sys-chip').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
   renderItemChips();
@@ -779,28 +723,62 @@ function renderItemChips() {
   if (!items) { sec.style.display = 'none'; return; }
   sec.style.display = '';
   container.innerHTML = '';
+
   items.forEach(item => {
     const btn = document.createElement('button');
-    btn.className = 'item-chip' + (item === selItem ? ' active' : '');
+    btn.className = 'item-chip' + (selItems.includes(item) ? ' active' : '');
     btn.textContent = item;
     btn.onclick = () => pickItem(item, btn);
     container.appendChild(btn);
   });
-  // 기타 버튼
+
   const other = document.createElement('button');
-  other.className = 'item-chip other' + (selItem === '기타' ? ' active' : '');
+  other.className = 'item-chip other' + (selItems.includes('기타') ? ' active' : '');
   other.textContent = '기타';
   other.onclick = () => pickItem('기타', other);
   container.appendChild(other);
+
+  updateItemCountBadge();
 }
 
 function pickItem(item, btn) {
-  selItem = item;
-  document.querySelectorAll('.item-chip').forEach(c => c.classList.remove('active'));
-  btn.classList.add('active');
-  const customWrap = document.getElementById('item-custom-wrap');
-  customWrap.style.display = item === '기타' ? 'block' : 'none';
-  if (item !== '기타') document.getElementById('inp-item-custom').value = '';
+  if (item === '기타') {
+    const isActive = btn.classList.contains('active');
+    // 기타 선택 시 다른 항목 선택 유지, 기타만 토글
+    if (isActive) {
+      selItems = selItems.filter(i => i !== '기타');
+      btn.classList.remove('active');
+      document.getElementById('item-custom-wrap').style.display = 'none';
+      document.getElementById('inp-item-custom').value = '';
+    } else {
+      selItems.push('기타');
+      btn.classList.add('active');
+      document.getElementById('item-custom-wrap').style.display = 'block';
+    }
+  } else {
+    const idx = selItems.indexOf(item);
+    if (idx === -1) {
+      selItems.push(item);
+      btn.classList.add('active');
+    } else {
+      selItems.splice(idx, 1);
+      btn.classList.remove('active');
+    }
+    // 기타 입력창은 기타가 선택된 경우에만 표시
+    const customWrap = document.getElementById('item-custom-wrap');
+    customWrap.style.display = selItems.includes('기타') ? 'block' : 'none';
+  }
+  updateItemCountBadge();
+}
+
+function updateItemCountBadge() {
+  const badge = document.getElementById('item-count-badge');
+  if (selItems.length > 0) {
+    badge.style.display = 'inline-block';
+    badge.textContent = selItems.length;
+  } else {
+    badge.style.display = 'none';
+  }
 }
 
 function pickResult(r) {
@@ -812,9 +790,6 @@ function pickResult(r) {
   document.getElementById('comment-box').classList.toggle('visible', r === 'comment');
 }
 
-// ══════════════════════════════
-//  CONFIRM CHECK
-// ══════════════════════════════
 function toggleConfirm() {
   isConfirmed = !isConfirmed;
   const wrap = document.getElementById('confirm-check-wrap');
@@ -831,9 +806,11 @@ function toggleConfirm() {
   }
 }
 
-// ══════════════════════════════
-//  SUBMIT
-// ══════════════════════════════
+function getFinalItems() {
+  const itemCustom = document.getElementById('inp-item-custom').value.trim();
+  return selItems.map(i => i === '기타' ? (itemCustom || '기타') : i);
+}
+
 function handleSubmit() {
   const personSel = document.getElementById('inp-person').value;
   const personCustom = document.getElementById('inp-person-custom').value.trim();
@@ -846,10 +823,9 @@ function handleSubmit() {
   if (!person) return alert('담당자를 선택하거나 입력해 주세요.');
   if (!vessel) return alert('호선을 입력해 주세요.');
   if (!selSystem) return alert('시스템을 선택해 주세요.');
-  // 품목 validation
-  const itemCustom = document.getElementById('inp-item-custom').value.trim();
-  const finalItem = selItem === '기타' ? (itemCustom || '') : selItem;
-  if (SYSTEM_ITEMS[selSystem] && !finalItem) return alert('품목을 선택해 주세요.');
+  if (SYSTEM_ITEMS[selSystem] && selItems.length === 0) return alert('품목을 하나 이상 선택해 주세요.');
+  const finalItems = getFinalItems();
+  if (selItems.includes('기타') && !document.getElementById('inp-item-custom').value.trim()) return alert('기타 품목명을 입력해 주세요.');
   if (!selResult) return alert('작업완료 여부를 선택해 주세요.');
   if (!isConfirmed) return alert('최종 확인 체크를 해 주세요.');
 
@@ -859,28 +835,26 @@ function handleSubmit() {
   document.getElementById('mc-name').textContent   = person;
   document.getElementById('mc-vessel').textContent = vessel;
   document.getElementById('mc-sys').textContent    = selSystem;
-  document.getElementById('mc-item').textContent   = finalItem || '-';
+  document.getElementById('mc-item').textContent   = finalItems.join(', ') || '-';
   document.getElementById('mc-result').textContent = selResult === 'complete' ? '✅ 완료' : '💬 코멘트 발생';
   document.getElementById('m-confirm').classList.add('open');
 }
 
-let isSubmitting = false;
-let isConfirmed = false;
 async function confirmSubmit() {
   if (isSubmitting) return;
   isSubmitting = true;
   const confirmBtn = document.querySelector('#m-confirm .btn-confirm');
   if (confirmBtn) { confirmBtn.disabled = true; confirmBtn.textContent = '제출 중...'; }
   closeModal('m-confirm');
+
   const now = new Date();
   const personSel = document.getElementById('inp-person').value;
   const personCustom = document.getElementById('inp-person-custom').value.trim();
   const person = personSel === '기타' ? (personCustom || '') : personSel;
   const yardCustom = document.getElementById('inp-yard-custom').value.trim();
   const yard = selYard === '기타' ? (yardCustom || '기타') : selYard;
-
-  const itemCustom = document.getElementById('inp-item-custom').value.trim();
-  const finalItem = selItem === '기타' ? (itemCustom || '기타') : (selItem || '');
+  const finalItems = getFinalItems();
+  const finalItem = finalItems.join(', ');
 
   const entry = {
     id: now.getTime().toString(),
@@ -923,7 +897,7 @@ async function confirmSubmit() {
 }
 
 function resetForm() {
-  selYard = null; selResult = null; selSystem = null; selItem = null; isConfirmed = false;
+  selYard = null; selResult = null; selSystem = null; selItems = []; isConfirmed = false;
   document.getElementById('worker-form').style.display = '';
   document.getElementById('success-screen').classList.remove('visible');
   document.getElementById('inp-person').value = '';
@@ -938,10 +912,13 @@ function resetForm() {
   document.getElementById('inp-item-custom').value = '';
   document.getElementById('item-custom-wrap').style.display = 'none';
   document.getElementById('item-sec').style.display = 'none';
+  document.getElementById('item-count-badge').style.display = 'none';
   const wrap = document.getElementById('confirm-check-wrap');
   const box = document.getElementById('confirm-check-box');
   const text = document.getElementById('confirm-check-text');
-  if(wrap){wrap.classList.remove('checked');} if(box){box.textContent='';} if(text){text.textContent='위 내용을 확인했습니다';}
+  if(wrap) wrap.classList.remove('checked');
+  if(box) box.textContent = '';
+  if(text) text.textContent = '위 내용을 확인했습니다';
   document.getElementById('comment-box').classList.remove('visible');
   document.getElementById('rb-complete').className = 'result-btn';
   document.getElementById('rb-comment').className = 'result-btn';
@@ -950,9 +927,7 @@ function resetForm() {
   window.scrollTo(0, 0);
 }
 
-// ══════════════════════════════
-//  ADMIN
-// ══════════════════════════════
+// ADMIN
 function initAdmin() {
   document.getElementById('admin-date').textContent =
     new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
@@ -1024,9 +999,7 @@ async function loadAdminData() {
       if (data && data.rows) {
         adminRows = data.rows;
         setDataSource('sheet');
-      } else {
-        throw new Error('no rows');
-      }
+      } else { throw new Error('no rows'); }
     } catch(e) {
       console.warn('시트 불러오기 실패, 로컬 데이터 사용:', e);
       adminRows = [...logs];
@@ -1077,15 +1050,9 @@ function setDataSource(source) {
     if (h1) h1.appendChild(el);
   }
   if (source === 'sheet') {
-    el.style.background = 'var(--green-bg)';
-    el.style.color = 'var(--green)';
-    el.style.border = '1px solid var(--green-b)';
-    el.textContent = '● 시트 연동';
+    el.style.background = 'var(--green-bg)'; el.style.color = 'var(--green)'; el.style.border = '1px solid var(--green-b)'; el.textContent = '● 시트 연동';
   } else {
-    el.style.background = 'var(--orange-bg)';
-    el.style.color = 'var(--orange)';
-    el.style.border = '1px solid var(--orange-b)';
-    el.textContent = '● 로컬 데이터';
+    el.style.background = 'var(--orange-bg)'; el.style.color = 'var(--orange)'; el.style.border = '1px solid var(--orange-b)'; el.textContent = '● 로컬 데이터';
   }
 }
 
@@ -1100,8 +1067,6 @@ function updateStats() {
 
 function renderTable() {
   const source = adminRows.length ? adminRows : logs;
-
-  // 시스템 드롭다운을 실제 데이터 기반으로 갱신 (값 읽기 전에 먼저)
   const sysSelect = document.getElementById('f-sys');
   if (sysSelect) {
     const cur = sysSelect.value;
@@ -1115,11 +1080,11 @@ function renderTable() {
     });
   }
 
-  const nf  = document.getElementById('f-name').value.toLowerCase();
-  const yf  = document.getElementById('f-yard').value.toLowerCase();
-  const vf  = document.getElementById('f-vessel').value.trim();
-  const sf  = document.getElementById('f-sys').value;
-  const rf  = document.getElementById('f-result').value;
+  const nf = document.getElementById('f-name').value.toLowerCase();
+  const yf = document.getElementById('f-yard').value.toLowerCase();
+  const vf = document.getElementById('f-vessel').value.trim();
+  const sf = document.getElementById('f-sys').value;
+  const rf = document.getElementById('f-result').value;
 
   let rows = source.filter(r => {
     if (nf && !(r.person||'').toLowerCase().includes(nf)) return false;
@@ -1200,23 +1165,14 @@ function exportCSV() {
   a.click();
 }
 
-// ══════════════════════════════
-//  Modal
-// ══════════════════════════════
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 window.onclick = e => { if (e.target.classList.contains('modal-bg')) e.target.classList.remove('open'); };
 
-// ══════════════════════════════
-//  Helpers
-// ══════════════════════════════
 function fmtDateTime(d) {
   return d.toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}) + ' ' +
          d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
 
-// ══════════════════════════════
-//  Init
-// ══════════════════════════════
 initWorker();
 </script>
 </body>
