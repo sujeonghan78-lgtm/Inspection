@@ -180,7 +180,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); min-
 .item-chip {
   padding: 8px 14px; border-radius: 9px; font-size: 12px; font-weight: 600;
   border: 1.5px solid var(--border); background: var(--bg3);
-  color: var(--text2); cursor: pointer; transition: all 0.12s;
+  color: var(--text2); cursor: pointer; transition: all 0.12px;
   font-family: var(--sans); letter-spacing: 0.02em; text-align: center;
 }
 .item-chip:hover { border-color: var(--blue-l); color: var(--blue); background: var(--blue-xl); }
@@ -438,7 +438,7 @@ tr:hover td { background: var(--bg3); }
     <div class="sec">
       <div class="sec-title">호선 <span class="req">*</span></div>
       <div class="form-group">
-        <input class="form-input" id="inp-vessel" type="text" placeholder="예: 1234" inputmode="numeric">
+        <input class="form-input" id="inp-vessel" type="text" placeholder="예: 1234, S001, 갑호선">
       </div>
     </div>
 
@@ -626,7 +626,7 @@ const SYSTEM_ITEMS = {
 let selYard   = null;
 let selResult = null;
 let selSystem = null;
-let selItems  = [];   // 다중선택 배열
+let selItems  = [];
 let systems   = JSON.parse(localStorage.getItem('insp-systems') || 'null') || [...DEFAULT_SYSTEMS];
 let logs      = JSON.parse(localStorage.getItem('insp-logs') || '[]');
 let adminRows = [];
@@ -745,7 +745,6 @@ function renderItemChips() {
 function pickItem(item, btn) {
   if (item === '기타') {
     const isActive = btn.classList.contains('active');
-    // 기타 선택 시 다른 항목 선택 유지, 기타만 토글
     if (isActive) {
       selItems = selItems.filter(i => i !== '기타');
       btn.classList.remove('active');
@@ -765,7 +764,6 @@ function pickItem(item, btn) {
       selItems.splice(idx, 1);
       btn.classList.remove('active');
     }
-    // 기타 입력창은 기타가 선택된 경우에만 표시
     const customWrap = document.getElementById('item-custom-wrap');
     customWrap.style.display = selItems.includes('기타') ? 'block' : 'none';
   }
